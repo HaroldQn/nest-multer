@@ -1,9 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
 
 @Module({
-  imports: [],
+  imports: [
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './upload2',
+        filename: (req, file, cb) => {
+          console.log(file);
+          const fileExt = path.extname(file.originalname); // Extrae la extensión
+          const nameCifrado = `${Date.now()}${Math.round(Math.random() * 1e9)}${fileExt}`;
+          console.log(nameCifrado);
+          cb(null, nameCifrado);
+        },
+      }),
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
