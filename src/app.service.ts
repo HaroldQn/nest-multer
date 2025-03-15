@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-process.loadEnvFile();
+
+
+
 @Injectable()
 export class AppService {
   private genAI: GoogleGenerativeAI;
