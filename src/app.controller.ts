@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   InternalServerErrorException,
   Post,
   UploadedFile,
@@ -16,11 +17,16 @@ import * as pdfParse from 'pdf-parse';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AppService } from './app.service';
-import { response } from 'express';
 @Controller('files')
 export class AppController {
   //Modelo 4
   constructor(private readonly appService: AppService) {}
+
+  @Get('/')
+  getHello(): string {
+    return 'Hello World!';
+  }
+
 
   /**
    * De esta manera se puede subir un archivo a la carpeta upload
@@ -29,7 +35,7 @@ export class AppController {
    * */
 
   // Modelo 1
-  @Post('upload')
+  @Post('/upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -58,7 +64,7 @@ export class AppController {
 
   // Modelo 2
 
-  @Post('upload2')
+  @Post('/upload2')
   @UseInterceptors(FileInterceptor('all'))
   UploadModel2(@UploadedFile() file: Express.Multer.File) {
     try {
@@ -72,7 +78,7 @@ export class AppController {
   }
 
   // Modelo 3 - Todo se manejara en memoria
-  @Post('upload3')
+  @Post('/upload3')
   @UsePipes(ValidateFilePipe)
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async UploadModel3(@UploadedFile() file: Express.Multer.File) {
@@ -90,7 +96,7 @@ export class AppController {
   }
 
   // Modelo 4 - Extra del modelo 3, esta vez analizaremos el archivo PDF usando Gemini IA
-  @Post('upload_ia')
+  @Post('/upload_ia')
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async UploadModel4(
     @UploadedFile(ValidateFilePipe) file: Express.Multer.File,
