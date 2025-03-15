@@ -10,6 +10,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateFilePipe } from './pipe/validate-file/validate-file.pipe';
 import { memoryStorage } from 'multer';
 
+import * as pdfParse from 'pdf-parse'
+
 import * as fs from 'fs';
 import * as path from 'path';
 @Controller('files')
@@ -66,4 +68,18 @@ export class AppController {
   }
 
   // Modelo 3 - Todo se manejara en memoria 
+  @Post('upload3')
+  @UsePipes(ValidateFilePipe)
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  async UploadModel3(@UploadedFile() file: Express.Multer.File) {
+    try {
+      const extractedText = await pdfParse(file.buffer)
+      return {
+        message: 'File uploaded successfully',
+        file: extractedText.text,
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('No se pudo procesar el archivo PDF');
+    }
+  }
 }
